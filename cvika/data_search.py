@@ -1,48 +1,33 @@
-lengths_input = input()
+import sys
 
-def read_numbers(data, number_count, seps = [" "]):
-    i = 0 #count of numbers added to the list
-    number = ""
-    numbers_list = []
-    for char in data:
-        if i < number_count:
-            if char in seps:
-                numbers_list.append(int(number))
-                number = ""
-                i += 1
-            else:
-                number += char
+len_input = input().strip().split()
+
+len_data, len_requests = int(len_input[0]), int(len_input[1])
+
+data_requests_input = sys.stdin.read()
+
+number = ""
+seps = [" ", "\n"]
+data = []
+requests = []
+i = 0
+for char in data_requests_input:
+    if char in seps:
+        if i < len_data:
+            data.append(int(number))
+        elif i < len_data + len_requests:
+            requests.append(int(number))
         else:
             break
-    if i < number_count:
-        numbers_list.append(int(number))
-
-    return numbers_list
-
-lengths = read_numbers(lengths_input, 2)
-len_data, len_requests = lengths[0], lengths[1]
-
-if len_data == 0:
-    if len_requests == 0:
-        data_input = ""
-        requests_input = ""
+        i += 1
+        number = ""
     else:
-        data_input = ""
-        requests_input = input()
-elif len_requests == 0:
-    data_input = input()
-    requests_input = ""
-else:
-    data_input = input()
-    requests_input = input()
-
-data = read_numbers(data_input, len_data)
-requests = read_numbers(requests_input, len_requests)
+        number += char
 
 def binary_search(data, searched): # returns mathematical index of searched item or 0
     bottom = 0
     top = len(data) - 1
-    if top < 0:
+    if top < 0: # for empty lists
         return 0
     index = (top + bottom) // 2
     while bottom <= top:
