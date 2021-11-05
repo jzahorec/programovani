@@ -1,6 +1,4 @@
 lengths_input = input()
-data_input = input()
-requests_input = input()
 
 def read_numbers(data, number_count, seps = [" "]):
     i = 0 #count of numbers added to the list
@@ -24,14 +22,28 @@ def read_numbers(data, number_count, seps = [" "]):
 lengths = read_numbers(lengths_input, 2)
 len_data, len_requests = lengths[0], lengths[1]
 
+if len_data == 0:
+    if len_requests == 0:
+        data_input = ""
+        requests_input = ""
+    else:
+        data_input = ""
+        requests_input = input()
+elif len_requests == 0:
+    data_input = input()
+    requests_input = ""
+else:
+    data_input = input()
+    requests_input = input()
+
 data = read_numbers(data_input, len_data)
-
-
 requests = read_numbers(requests_input, len_requests)
 
 def binary_search(data, searched): # returns mathematical index of searched item or 0
     bottom = 0
     top = len(data) - 1
+    if top < 0:
+        return 0
     index = (top + bottom) // 2
     while bottom <= top:
         index = (top + bottom) // 2
