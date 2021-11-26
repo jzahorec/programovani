@@ -138,7 +138,6 @@ class Dilek:  # instance dilku
             [[0, 1, 0], [1, 1, 1]],
         ]  # myslim, ze mam vsechny typy dilku
         barva = random.randint(1, 8)
-        print(barva)
         self.rozmery = typy_dilku[random.randint(0, len(typy_dilku) - 1)]
         for radek in range(len(self.rozmery)): # cislo znaci barvu, spravuje grafika
             for bod in range(len(self.rozmery[radek])):
