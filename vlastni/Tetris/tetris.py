@@ -1,22 +1,22 @@
+#!/usr/bin/python3
 """
-Prvni pokus o implementaci hry Tetris - zapoctovy program
+Back-end tetrisu
 
-Idea je dat kazdemu dilku pole, ktere si bude vyhodnocovat a pri svem zaniku se do pole zapise a privola dalsi dilek, kteremu doda aktualizovane pole
-Pri zapisu se provede kontola radku, jestli neni nejaky plny, a pokud ano, pak tento radek se smaze a na zacatek se prida prazdny radek
-
-Provest matiku na toceni dilkem, nejaka matice asi
+Pri kazdem posunu dilku se vytvori novy, ktery se porovnava. Pokud novy dilek projde kontrolou,
+puvodni se na nej prepise.
 """
 
 import random
 
 """
-Funkce na matici
+Funkce na matici(seznam), potrebne pro otoceni dilku
 """
 
 
 def transpozice(matice):  # transponuje matici
-    transponovana_matice = [[None for j in range(
-        len(matice))] for i in range(len(matice[0]))]
+    transponovana_matice = [
+        [None for j in range(len(matice))] for i in range(len(matice[0]))
+    ]
     for i in range(len(matice)):
         for j in range(len(matice[0])):
             transponovana_matice[j][i] = matice[i][j]
@@ -24,13 +24,14 @@ def transpozice(matice):  # transponuje matici
 
 
 def symetrie_radku(matice):  # prohodi prvky matice podle osy stredoveho sloupce
-    symetricka_matice = [[matice[i][j] for j in range(
-        len(matice[0]))] for i in range(len(matice))]  # udela kopii
+    symetricka_matice = [
+        [matice[i][j] for j in range(len(matice[0]))] for i in range(len(matice))
+    ]  # udela kopii
     delka_radku = len(matice[0])
     for radek in symetricka_matice:
         for i in range(delka_radku // 2):
-            radek[i], radek[delka_radku -
-                            (i + 1)] = radek[delka_radku - (i + 1)], radek[i]
+            radek[i], radek[delka_radku - (i + 1)] = radek[delka_radku - (i + 1)], radek[i]
+
     return symetricka_matice
 
 
@@ -39,7 +40,7 @@ Funkce na dilek
 """
 
 
-def otoc(dilek, smer):  # vrati kontrolni dilek otoceny podle zadani, smer True doleva
+def otoc(dilek, smer):  # vrati kontrolni dilek otoceny, smer True doleva
     pocet_radku = len(dilek.rozmery)
     pocet_sloupcu = len(dilek.rozmery[0])
     novy = Dilek()
@@ -48,14 +49,17 @@ def otoc(dilek, smer):  # vrati kontrolni dilek otoceny podle zadani, smer True 
     else:
         novy.rozmery = transpozice(symetrie_radku(dilek.rozmery))
     novy.i, novy.j = dilek.i + (pocet_radku - len(dilek.rozmery)), dilek.j + (
-        pocet_sloupcu - len(dilek.rozmery[0]))  # vypocet zmeny pozice dilku
+        pocet_sloupcu - len(dilek.rozmery[0])
+    )  # vypocet zmeny pozice dilku
     return novy
 
 
-def posun(dilek, smer):
+def posun(dilek, smer):  # smer urcen ve tvaru [i, j], kde i, j jsou zmeny oproti puvodni
     novy = Dilek()
-    novy.rozmery = [[dilek.rozmery[i][j] for j in range(len(dilek.rozmery[0]))] for i in range(
-        len(dilek.rozmery))]  # tady je chyba - snad uz ne
+    novy.rozmery = [
+        [dilek.rozmery[i][j] for j in range(len(dilek.rozmery[0]))]
+        for i in range(len(dilek.rozmery))
+    ]
     novy.i = dilek.i + smer[0]
     novy.j = dilek.j + smer[1]
     return novy
@@ -63,14 +67,22 @@ def posun(dilek, smer):
 
 def kontrola(hraci_pole, dilek):
     # kontroluje, jestli dilek v poli
-    if dilek.i < 0 or dilek.j < 0 or dilek.i > len(hraci_pole) - len(dilek.rozmery) or dilek.j > len(hraci_pole[0]) - len(dilek.rozmery[0]):
+    if (
+        dilek.i < 0
+        or dilek.j < 0
+        or dilek.i > len(hraci_pole) - len(dilek.rozmery)
+        or dilek.j > len(hraci_pole[0]) - len(dilek.rozmery[0])
+    ):
         return False
 
     lze = True
 
     for tmp_i in range(len(dilek.rozmery)):
-        for tmp_j in range(len(dilek.rozmery[tmp_i])):
-            if hraci_pole[tmp_i + dilek.i][tmp_j + dilek.j] == 1 and dilek.rozmery[tmp_i][tmp_j] == 1:
+        for tmp_j in range(len(dilek.rozmery[0])):
+            if (
+                hraci_pole[tmp_i + dilek.i][tmp_j + dilek.j] == 1
+                and dilek.rozmery[tmp_i][tmp_j] == 1
+            ):
                 lze = False
     return lze
 
@@ -86,7 +98,7 @@ def vynulovani_radku(hraci_pole):
     for i in range(len(hraci_pole)):
         plny = True
         for bod in hraci_pole[i]:
-            if bod == 0:
+            if not bod:
                 plny = False
                 break
         if plny:
@@ -101,7 +113,7 @@ def vynulovani_radku(hraci_pole):
 
 def prohra(hraci_pole):
     for bod in hraci_pole[0]:
-        if bod == 1:
+        if bod:
             return True
     return False
 
@@ -118,8 +130,13 @@ class Dilek:  # instance dilku
         self.j = 0
 
     def novy_dilek(self, hraci_pole):
-        typy_dilku = [[[1], [1], [1], [1]], [[1, 0], [1, 0], [1, 1]], [[0, 1, 1], [1, 1, 0]], [
-            [1, 1], [1, 1]], [[0, 1, 0], [1, 1, 1]]]  # myslim, ze mam vsechny typy dilku
+        typy_dilku = [
+            [[1], [1], [1], [1]],
+            [[1, 0], [1, 0], [1, 1]],
+            [[0, 1, 1], [1, 1, 0]],
+            [[1, 1], [1, 1]],
+            [[0, 1, 0], [1, 1, 1]],
+        ]  # myslim, ze mam vsechny typy dilku
         self.rozmery = typy_dilku[random.randint(0, len(typy_dilku) - 1)]
         if random.randint(0, 1):
             self.rozmery = transpozice(self.rozmery)
@@ -129,8 +146,7 @@ class Dilek:  # instance dilku
 
 class Hra:  # instance jedne hry
     def __init__(self, rozmery):
-        self.hraci_pole = [
-            [0 for j in range(rozmery[1])] for i in range(rozmery[0])]
+        self.hraci_pole = [[0 for j in range(rozmery[1])] for i in range(rozmery[0])]
         self.skore = 0
         self.dilek = Dilek()
         self.dilek.novy_dilek(self.hraci_pole)
@@ -145,7 +161,7 @@ class Hra:  # instance jedne hry
         if kontrola(self.hraci_pole, novy):
             self.dilek = novy
 
-    def tick(self):
+    def tick(self):  # klasicky pohyb dilku v case
         novy = posun(self.dilek, [1, 0])
         if kontrola(self.hraci_pole, novy):
             self.dilek = novy
@@ -164,14 +180,15 @@ class Hra:  # instance jedne hry
             else:
                 self.dilek.novy_dilek(self.hraci_pole)
 
-    def vykresli(self):
-        vykreslene_pole = [[self.hraci_pole[i][j] for j in range(
-            len(self.hraci_pole[0]))] for i in range(len(self.hraci_pole))]
+    def vykresli(self):  # vrati aktualbi pole i s vnorenym dilkem
+        vykreslene_pole = [
+            [self.hraci_pole[i][j] for j in range(len(self.hraci_pole[0]))]
+            for i in range(len(self.hraci_pole))
+        ]  # kopie hraciho pole
 
         for i in range(len(self.dilek.rozmery)):  # zanoreni dilku do pole
             for j in range(len(self.dilek.rozmery[0])):
                 if self.dilek.rozmery[i][j]:
-                    vykreslene_pole[i + self.dilek.i][j +
-                                                      self.dilek.j] = self.dilek.rozmery[i][j]
+                    vykreslene_pole[i + self.dilek.i][j + self.dilek.j] = self.dilek.rozmery[i][j]
 
         return vykreslene_pole
