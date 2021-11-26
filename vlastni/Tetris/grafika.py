@@ -37,13 +37,14 @@ label_bodu.grid(row=0, column=1)
 body_pole = [[zobrazovaci_pole.create_rectangle(j*length, i*length, (j+1)*length, (i+1)*length, fill="white") for j in range(len(hra.hraci_pole[0]))]
              for i in range(len(hra.hraci_pole))]  # pole s odkazy na jednotlive ctverecky zobrazovaciho pole
 
+barvy = ["blue", "black", "yellow", "orange", "green", "grey", "pink", "purple"]
 
 def obnov():
     vykreslitelne_pole = hra.vykresli()
     for i in range(len(vykreslitelne_pole)):
         for j in range(len(vykreslitelne_pole)):
             if vykreslitelne_pole[i][j]:
-                zobrazovaci_pole.itemconfig(body_pole[i][j], fill="blue")
+                zobrazovaci_pole.itemconfig(body_pole[i][j], fill=barvy[vykreslitelne_pole[i][j]-1])
             else:
                 zobrazovaci_pole.itemconfig(body_pole[i][j], fill="white")
 
@@ -54,7 +55,8 @@ def obnov_zvyraznene():
     for i in range(len(hra.hraci_pole)):
         for j in range(len(hra.hraci_pole[0])):
             if hra.hraci_pole[i][j]:
-                zobrazovaci_pole.itemconfig(body_pole[i][j], fill="blue")
+                print(hra.hraci_pole[i][j])
+                zobrazovaci_pole.itemconfig(body_pole[i][j], fill=barvy[hra.hraci_pole[i][j]-1])
             else:
                 zobrazovaci_pole.itemconfig(body_pole[i][j], fill="white")
 

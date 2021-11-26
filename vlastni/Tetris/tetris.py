@@ -80,8 +80,8 @@ def kontrola(hraci_pole, dilek):
     for tmp_i in range(len(dilek.rozmery)):
         for tmp_j in range(len(dilek.rozmery[0])):
             if (
-                hraci_pole[tmp_i + dilek.i][tmp_j + dilek.j] == 1
-                and dilek.rozmery[tmp_i][tmp_j] == 1
+                hraci_pole[tmp_i + dilek.i][tmp_j + dilek.j]
+                and dilek.rozmery[tmp_i][tmp_j]
             ):
                 lze = False
     return lze
@@ -137,7 +137,12 @@ class Dilek:  # instance dilku
             [[1, 1], [1, 1]],
             [[0, 1, 0], [1, 1, 1]],
         ]  # myslim, ze mam vsechny typy dilku
+        barva = random.randint(1, 8)
+        print(barva)
         self.rozmery = typy_dilku[random.randint(0, len(typy_dilku) - 1)]
+        for radek in range(len(self.rozmery)): # cislo znaci barvu, spravuje grafika
+            for bod in range(len(self.rozmery[radek])):
+                self.rozmery[radek][bod] *= barva
         if random.randint(0, 1):
             self.rozmery = transpozice(self.rozmery)
 
